@@ -1,3 +1,4 @@
 example_mission
 node_modules
-output.json
+parse_output.json
+.env
