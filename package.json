@@ -16,7 +16,10 @@
     "url": "https://github.com/Ked57/dcs-mission-parser/issues"
   },
   "homepage": "https://github.com/Ked57/dcs-mission-parser#readme",
-  "dependencies": {},
+  "dependencies": {
+    "await-of": "^3.1.0",
+    "jszip": "^3.5.0"
+  },
   "devDependencies": {
     "@types/node": "^14.14.6",
     "dotenv": "^8.2.0",

@@ -1,4 +1,5 @@
 example_mission
 node_modules
 parse_output.json
+serialize_output
 .env
