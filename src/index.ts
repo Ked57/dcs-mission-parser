@@ -44,7 +44,13 @@ const newMission = async (
     return Promise.reject();
   }
   state.set("missionFile", missionData);
+  /**
+   * @returns The mission file string at its current state
+   */
   const getMissionFileString = () => state.get("missionFile");
+  /**
+   * @returns The mission file as a JSON Object
+   */
   const toJSON = () => {
     const jsonMissionString = parse(state.get("missionFile"));
 
@@ -55,6 +61,9 @@ const newMission = async (
     state.set("jsonMissionObject", jsonMissionObject);
     return state.get("jsonMissionObject");
   };
+  /**
+   * @returns The mission file as a LUA string
+   */
   const toLua = () => {
     const jsonMissionObject = state.get("jsonMissionObject");
     const luaMissionString = unparse(jsonMissionObject);
@@ -64,6 +73,9 @@ const newMission = async (
     state.set("luaMissionString", luaMissionString);
     return state.get("luaMissionString");
   };
+  /**
+   * Compute the mission to LUA and saves it to the path specified in the newMission function
+   */
   const save = async () => {
     const luaMissionString = toLua();
     const [mizFile, errMizFile] = await of(openMission(missionFilePath));
@@ -103,11 +115,11 @@ type Mission = {
 export { newMission };
 
 // Example use
-(async () => {
-  const mission = await newMission(
-    "55th_3rd_desert_scout_patrol.miz",
-    "55th_3rd_desert_scout_patrol_updated.miz"
-  );
-  await mission.toJSON();
-  await mission.save();
-})();
+// (async () => {
+//   const mission = await newMission(
+//     "example_mission.miz",
+//     "example_mission_updated.miz"
+//   );
+//   await mission.toJSON();
+//   await mission.save();
+// })();
