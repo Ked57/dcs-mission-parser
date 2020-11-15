@@ -1,0 +1,11 @@
+/src/
+/docs/
+/.circleci/
+./tsconfig.json
+./typedoc.json
+./prettierrc.json
+./.parse_output.json
+./unparse_output
+./example_mission
+./.env.example
+./.env

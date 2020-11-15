@@ -1,21 +1,31 @@
 {
   "name": "dcs-mission-parser",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "A lib to extract, parse, modify and save.miz files from DCS World",
   "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "start": "ts-node -r dotenv/config index.ts"
+    "start": "ts-node -r dotenv/config src/index.ts",
+    "build": "tsc --declaration",
+    "format:check": "prettier src/**/*.ts --list-different",
+    "format:fix": "prettier src/**/*.ts --write",
+    "docs:generate": "typedoc --plugin typedoc-plugin-markdown"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Ked57/dcs-mission-parser.git"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Ked",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/Ked57/dcs-mission-parser/issues"
   },
   "homepage": "https://github.com/Ked57/dcs-mission-parser#readme",
+  "keywords": [
+    "dcs-mission-parser",
+    "DCS World",
+    "DCS"
+  ],
   "dependencies": {
     "await-of": "^3.1.0",
     "jszip": "^3.5.0"
@@ -23,7 +33,10 @@
   "devDependencies": {
     "@types/node": "^14.14.6",
     "dotenv": "^8.2.0",
+    "prettier": "^2.1.2",
     "ts-node": "^9.0.0",
+    "typedoc": "^0.19.2",
+    "typedoc-plugin-markdown": "^3.0.11",
     "typescript": "^4.0.5"
   }
 }

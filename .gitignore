@@ -1,5 +1,6 @@
-example_mission
+example_mission.miz
 node_modules
 parse_output.json
-serialize_output
+unparse_output
 .env
+lib

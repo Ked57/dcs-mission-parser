@@ -1,6 +1,8 @@
 import fs from "fs";
 import { of } from "await-of";
 import jsZip from "jszip";
+import { parse } from "./parse";
+import { unparse } from "./unparse";
 
 const { readFile, writeFile } = fs.promises;
 const DEV_DEBUG = process.env.DCS_MISSION_PARSER_DEV_DEBUG || false;
@@ -13,7 +15,11 @@ if (DEV_DEBUG) {
 const openMission = async (missionFilePath: string) =>
   await jsZip.loadAsync(await readFile(missionFilePath));
 
-export const newMission = async (
+/**
+ * @param missionFilePath  The path to the mission file
+ * @param missionOutputPath  The desired output path to save the mission
+ */
+const newMission = async (
   missionFilePath: string,
   missionOutputPath: string
 ): Promise<Mission> => {
@@ -40,22 +46,8 @@ export const newMission = async (
   state.set("missionFile", missionData);
   const getMissionFileString = () => state.get("missionFile");
   const toJSON = () => {
-    const jsonMissionString = state
-      .get("missionFile")
-      .replace(/mission = /g, "")
-      .replace(/\["(.*)"\] =/g, (_: string, p1: string) => `"${p1}":`)
-      .replace(
-        /\[(\d*)\] = (\n *{)/g,
-        (_: string, p1: string, p2: string) => `"${p1}0":${p2}`
-      )
-      .replace(/\[(\d*)\] =/g, (_: string, p1: string) => `"${p1}":`)
-      .replace(
-        /( -- end of \["*([\d\w /]*)"*\])/g,
-        (_: string, p1: string, p2: string) =>
-          `"${p2}1": "${p1.replace(/"/g, `\\"`)}",`
-      )
-      .replace(/(,)(\n *})/g, (_: string, __: string, p2: string) => p2)
-      .replace(`-- end of mission`, "");
+    const jsonMissionString = parse(state.get("missionFile"));
+
     if (DEV_DEBUG) {
       writeFile("parse_output.json", jsonMissionString);
     }
@@ -65,34 +57,9 @@ export const newMission = async (
   };
   const toLua = () => {
     const jsonMissionObject = state.get("jsonMissionObject");
-    const luaMissionString = `${`mission = \n${JSON.stringify(
-      jsonMissionObject,
-      null,
-      4
-    )}`
-      .replace(/(["\d\w}])(\n.*})/g, (_, p1, p2) => `${p1},${p2}`)
-      .replace(/(?!,"[\w\d]*") "(.*)": /g, (_, p1) =>
-        Number(p1) ? ` [${p1}] = ` : ` ["${p1}"] = `
-      )
-      .replace(
-        /( *)(\[.*\] = )({)\n/g,
-        (_, p1, p2, p3) => `${p1}${p2}\n${p1}${p3}\n`
-      )
-      .replace(
-        /( *)(\[.*\] = )({)(})/g,
-        (_, p1, p2, p3, p4) => `${p1}${p2}\n${p1}${p3}\n${p1}${p4}`
-      )
-      .replace(/\n *\[.*( --.*)",/g, (_, p1) => p1)
-      .replace(/( -- end of \[\\"[\w\d]*\\"\])/g, (_, p1) =>
-        p1.replace(/\\/g, "")
-      )
-      .replace(
-        /\n( *)\[([\d]*)\] = \n/g,
-        (_, p1, p2) =>
-          `\n${p1}[${Number(p2) ? Math.round(Number(p2) / 10) : p2}] = \n`
-      )} -- end of mission\n`;
+    const luaMissionString = unparse(jsonMissionObject);
     if (DEV_DEBUG) {
-      writeFile("serialize_output", luaMissionString);
+      writeFile("unparse_output", luaMissionString);
     }
     state.set("luaMissionString", luaMissionString);
     return state.get("luaMissionString");
@@ -133,6 +100,9 @@ type Mission = {
   save: () => void;
 };
 
+export { newMission };
+
+// Example use
 (async () => {
   const mission = await newMission(
     "55th_3rd_desert_scout_patrol.miz",
